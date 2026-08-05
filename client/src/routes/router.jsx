@@ -16,6 +16,10 @@ import NewsList from '../pages/admin/NewsList';
 import NewsCreate from '../pages/admin/NewsCreate';
 import NewsEdit from '../pages/admin/NewsEdit';
 import RatesAdmin from '../pages/admin/RatesAdmin';
+import ProductList from '../pages/admin/ProductList';
+import ProductCreate from '../pages/admin/ProductCreate';
+import ProductEdit from '../pages/admin/ProductEdit';
+import ProductDetail from '../pages/ProductDetail';
 import NotFound from '../pages/NotFound';
 
 const router = createBrowserRouter([
@@ -27,6 +31,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'collection', element: <Collection /> },
+      { path: 'collection/:slug', element: <ProductDetail /> },
       { path: 'rates', element: <Rates /> },
       { path: 'exchange', element: <Exchange /> },
       { path: 'visit', element: <VisitUs /> },
@@ -54,7 +59,11 @@ const router = createBrowserRouter([
       { path: 'news', element: <NewsList /> },
       { path: 'news/new', element: <NewsCreate /> },
       { path: 'news/:id/edit', element: <NewsEdit /> },
+      { path: 'products', element: <ProductList /> },
+      { path: 'products/new', element: <ProductCreate /> },
+      { path: 'products/:id/edit', element: <ProductEdit /> },
       { path: 'rates', element: <RatesAdmin /> },
+      { path: '*', element: <NotFound /> },
       { path: '*', element: <NotFound /> },
     ],
   },

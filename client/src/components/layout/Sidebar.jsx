@@ -13,6 +13,8 @@ const NAV_SECTIONS = [
     items: [
       { to: '/admin/news', label: 'News & updates' },
       { to: '/admin/news/new', label: 'Write an article' },
+      { to: '/admin/products', label: 'Products' },
+      { to: '/admin/products/new', label: 'Add a product' },
       { to: '/admin/rates', label: 'Metal rates' },
     ],
   },

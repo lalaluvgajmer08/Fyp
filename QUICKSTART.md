@@ -48,7 +48,7 @@ npm install
 
 ## 2. Seed the database (one-time)
 
-Creates the admin account and three sample news articles.
+Creates the admin account, sample news articles, metal rates, and products.
 
 ```bash
 cd server
@@ -59,9 +59,9 @@ npm run seed
 ```
 MongoDB connected: 127.0.0.1/jewelry_management
 Admin created: admin@aureliajewels.com / Admin@12345
-News seeded: Gold holds near record...
-News seeded: Silver eases...
-News seeded: Hallmarking rules tighten...
+Rates seeded: 4 rates published
+News seeded: 3 articles
+Products seeded: 8 products
 Seed complete
 ```
 
@@ -112,7 +112,12 @@ Visit **http://localhost:5173** in your browser.
 **Home page:**
 - Hero section
 - News strip with 3 articles (the seeded ones)
-- Rate board (shows placeholder data until the rates API is built)
+- Rate board with live daily rates (gold and silver prices)
+
+**Click "Collection" in the nav** → http://localhost:5173/collection
+- Browse all products with filters (category, metal)
+- Sort by price, weight, or newest
+- Click any product → detailed page with transparent price breakdown
 
 **Click "News" in the nav** → http://localhost:5173/news
 - Grid of all published articles
@@ -123,8 +128,11 @@ Visit **http://localhost:5173** in your browser.
 2. Sign in with the seeded account:
    - Email: `admin@aureliajewels.com`
    - Password: `Admin@12345`
-3. Lands on `/admin` — dashboard with stats and recent articles
-4. Sidebar: "News & updates" → full admin table with filters
+3. Lands on `/admin` — dashboard with stats and recent content
+4. Sidebar navigation:
+   - **Products** → manage catalogue, create/edit products with live price preview
+   - **Metal rates** → publish daily rates, view history
+   - **News & updates** → full admin table with filters
 
 ---
 
@@ -140,6 +148,12 @@ Visit **http://localhost:5173** in your browser.
 
 **Database is empty.** Run `npm run seed` in the server directory.
 
+### Products show "Price on request" instead of a price
+
+**No rate published for that purity.** Every product's `purity` must have a
+matching rate `category` on the board. Sign in as admin → "Metal rates" →
+publish a rate for that category, then refresh the catalogue.
+
 ### Login redirects back to /login immediately
 
 **Backend isn't running** or returned 401. Check the browser console (F12) → Network tab for the failing request.
@@ -154,18 +168,22 @@ Visit **http://localhost:5173** in your browser.
 
 ## What's complete
 
-- ✅ All 11 pages (Home, Collection, Rates, Exchange, Visit, Cart, News, NewsDetail, Login, Dashboard, NewsList, NewsCreate, NewsEdit)
+- ✅ Product catalogue — public browse with filters, sort, pagination, detail pages
+- ✅ Product CRUD (admin/staff create, edit, discontinue with live price preview)
+- ✅ Live pricing engine — prices computed per request from the rate board
+- ✅ Metal rates (publish daily rates, automatic day-on-day change calculation, history)
 - ✅ News CRUD (admin can create/edit/archive articles)
-- ✅ Auth flow (login, session restore, protected routes)
+- ✅ Auth flow (login, session restore, protected routes, role-based access)
 - ✅ Full routing (public storefront, login, admin console)
 - ✅ Context providers mounted (Auth, Toast, React Query)
-- ✅ Backend API (auth, news endpoints)
-- ✅ Seed script (admin + sample articles)
+- ✅ Backend API (auth, products, rates, news endpoints)
+- ✅ Seed script (admin + rates + articles + products)
 
-## What's placeholder (works, but shows static data)
+## What's still placeholder
 
-- Collection, Rates, Exchange, Visit, Cart — render a "coming soon" message using `PlaceholderPage`
-- Rate board on homepage — shows fallback data from `client/src/data/fallbackRates.js` because the `/rates` endpoint doesn't exist yet
+- Exchange, Visit, Cart — render a "coming soon" message using `PlaceholderPage`
+- Inventory and Orders — sidebar links are disabled, modules not built yet
+- Product images — `coverImage` accepts a URL, but there's no upload flow yet
 
 ---
 
@@ -195,15 +213,23 @@ To add more users, insert them directly into MongoDB or build the `/users` endpo
 - `server/src/models/` — Mongoose schemas
 
 **Database:** MongoDB (`jewelry_management`)
-- Collections: `users`, `news`
+- Collections: `users`, `rates`, `products`, `news`
 - Seeded by `npm run seed` in the server directory
+
+---
+
+## Further reading
+
+- `README.md` — feature overview and pricing model
+- `docs/API.md` — full endpoint reference with request/response examples
+- `docs/REPORT.md` — architecture, schemas, and design decisions for the report
 
 ---
 
 ## Next steps
 
-1. **Build the rates endpoint** — `GET /api/v1/rates` so the homepage shows live gold/silver prices
-2. **Inventory module** — products, categories, stock
-3. **Orders & exchanges** — customer transactions
-4. **File upload** — images for news articles and products (already has an `uploads/` directory)
+1. **Orders module** — customer reservations, staff order processing
+2. **Inventory tracking** — stock alerts, audit trail
+3. **Image upload** — Cloudinary/S3 integration for product photos
+4. **Exchange & Visit pages** — complete the placeholder pages
 5. **Deploy** — change `JWT_SECRET` before pushing to production
