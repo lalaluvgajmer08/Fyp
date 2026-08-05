@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -142,13 +143,18 @@ export default function Collection() {
                   key={product._id}
                   className="group relative flex flex-col border border-cream-200/12 bg-forest-850/40 transition-colors hover:border-gold-400/40"
                 >
-                  {product.coverImage && (
+                  {product.coverImage ? (
                     <img
                       src={product.coverImage}
                       alt=""
                       loading="lazy"
                       className="h-64 w-full object-cover"
                     />
+                  ) : (
+                    /* Keeps card heights even when a piece has no photo yet */
+                    <div className="flex h-64 w-full items-center justify-center bg-forest-850/60">
+                      <p className="text-sm text-muted-400/60">Photography coming soon</p>
+                    </div>
                   )}
 
                   <div className="flex flex-1 flex-col p-6">

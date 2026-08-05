@@ -10,7 +10,7 @@ import {
   puritiesForMetal,
 } from '../../config/productOptions';
 import { formatNPR, TOLA_IN_GRAMS } from '../../utils/formatters';
-import { useTodayRates } from '../../hooks/useTodayRates';
+import useTodayRates from '../../hooks/useTodayRates';
 
 const EMPTY = {
   name: '',
@@ -26,11 +26,23 @@ const EMPTY = {
   sku: '',
   stockQuantity: '1',
   coverImage: '',
+  images: '',
   craftNotes: '',
   hallmarkId: '',
   status: 'available',
   isFeatured: false,
 };
+
+/**
+ * The gallery is edited as free text, one URL per line. Blank lines and stray
+ * whitespace are common when pasting a list, so they're dropped here rather
+ * than being sent to the API as empty strings.
+ */
+const galleryUrls = (value) =>
+  value
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
 
 /** Number field values arrive as strings; '' means "not supplied". */
 const toNumber = (value, fallback = 0) => {
@@ -45,7 +57,7 @@ const toNumber = (value, fallback = 0) => {
  */
 export default function ProductForm({ initial, onSubmit, submitting, submitLabel = 'Save product' }) {
   const navigate = useNavigate();
-  const { data: rates } = useTodayRates();
+  const { rates, isLive } = useTodayRates();
 
   const [form, setForm] = useState(() => {
     if (!initial) return EMPTY;
@@ -60,6 +72,9 @@ export default function ProductForm({ initial, onSubmit, submitting, submitLabel
     numericKeys.forEach((key) => {
       if (defined[key] !== undefined) defined[key] = String(defined[key]);
     });
+
+    // The gallery is an array on the API but edited as one URL per line
+    if (Array.isArray(defined.images)) defined.images = defined.images.join('\n');
 
     return { ...EMPTY, ...defined };
   });
@@ -110,6 +125,12 @@ export default function ProductForm({ initial, onSubmit, submitting, submitLabel
       next.coverImage = 'Enter a full URL starting with http:// or https://';
     }
 
+    // Every gallery line must be a URL — one bad paste would render a broken tile
+    const badGallery = galleryUrls(form.images).filter((url) => !/^https?:\/\//.test(url));
+    if (badGallery.length) {
+      next.images = `Not a valid URL: ${badGallery[0]}`;
+    }
+
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -134,13 +155,20 @@ export default function ProductForm({ initial, onSubmit, submitting, submitLabel
       isFeatured: form.isFeatured,
       sku: form.sku.trim() || undefined,
       coverImage: form.coverImage.trim() || undefined,
+      images: galleryUrls(form.images),
       craftNotes: form.craftNotes.trim() || undefined,
       hallmarkId: form.hallmarkId.trim() || undefined,
     });
   };
 
-  // Live preview of what the customer will be quoted, using today's board
-  const rate = rates?.find((r) => r.category === form.purity);
+  // Only preview lines that already look like URLs, so the grid doesn't fill
+  // with broken tiles while a URL is still being typed.
+  const galleryPreview = galleryUrls(form.images).filter((url) => /^https?:\/\//.test(url));
+
+  // Live preview of what the customer will be quoted, using today's board.
+  // Only real published rates count — the hook's indicative fallback would
+  // show staff a price the catalogue will never actually quote.
+  const rate = isLive ? rates?.find((r) => r.category === form.purity) : null;
   const net = toNumber(form.netWeight);
   const metalValue = rate ? (rate.ratePerTola / TOLA_IN_GRAMS) * net : null;
   const estimate =
@@ -379,7 +407,36 @@ export default function ProductForm({ initial, onSubmit, submitting, submitLabel
               onChange={update('coverImage')}
               error={errors.coverImage}
               placeholder="https://…"
+              hint="The main photograph shown on the collection grid"
             />
+
+            <Textarea
+              label="Gallery image URLs"
+              rows={4}
+              value={form.images}
+              onChange={update('images')}
+              error={errors.images}
+              placeholder={'https://…\nhttps://…'}
+              hint="One URL per line. Shown as thumbnails under the cover photo."
+            />
+
+            {/* Preview so a broken or mistyped URL is caught before saving */}
+            {galleryPreview.length > 0 && (
+              <div>
+                <p className="eyebrow mb-3 text-muted-400">Preview</p>
+                <div className="grid grid-cols-4 gap-3">
+                  {galleryPreview.map((src, i) => (
+                    <img
+                      key={`${src}-${i}`}
+                      src={src}
+                      alt=""
+                      loading="lazy"
+                      className="aspect-square w-full border border-cream-200/12 bg-forest-850/60 object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </CardBody>
         </Card>
 

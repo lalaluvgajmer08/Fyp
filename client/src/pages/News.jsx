@@ -92,13 +92,16 @@ export default function News() {
                   key={article._id}
                   className="group relative flex flex-col border border-cream-200/12 bg-forest-850/40 transition-colors hover:border-gold-400/40"
                 >
-                  {article.coverImage && (
+                  {article.coverImage ? (
                     <img
                       src={article.coverImage}
                       alt=""
                       loading="lazy"
                       className="h-44 w-full object-cover"
                     />
+                  ) : (
+                    /* Keeps card heights even when an article has no cover */
+                    <div className="h-44 w-full bg-forest-850/60" />
                   )}
 
                   <div className="flex flex-1 flex-col p-6">

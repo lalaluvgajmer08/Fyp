@@ -64,7 +64,6 @@ const router = createBrowserRouter([
       { path: 'products/:id/edit', element: <ProductEdit /> },
       { path: 'rates', element: <RatesAdmin /> },
       { path: '*', element: <NotFound /> },
-      { path: '*', element: <NotFound /> },
     ],
   },
 ]);

@@ -3,11 +3,15 @@ import { Link, NavLink } from 'react-router-dom';
 import Container from '../common/Container';
 import { BagIcon, MenuIcon, CloseIcon } from '../common/icons';
 import { NAV_LINKS, SHOP } from '../../config/site';
+import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
 
 export default function Navbar({ cartCount = 0 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user } = useAuth();
+
+  const isStaff = user?.role === 'admin' || user?.role === 'staff';
 
   // Solid background once the hero starts scrolling under the bar
   useEffect(() => {
@@ -74,6 +78,24 @@ export default function Navbar({ cartCount = 0 }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            {/* Staff get a way into the console; everyone else gets a sign-in link.
+                Without this the admin area is only reachable by typing the URL. */}
+            {isStaff ? (
+              <Link
+                to="/admin"
+                className="hidden text-[0.9375rem] text-cream-200 transition-colors hover:text-gold-400 sm:inline"
+              >
+                Console
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden text-[0.9375rem] text-cream-200 transition-colors hover:text-gold-400 sm:inline"
+              >
+                Sign in
+              </Link>
+            )}
+
             {/* Cart */}
             <Link
               to="/cart"
@@ -128,6 +150,16 @@ export default function Navbar({ cartCount = 0 }) {
                   </NavLink>
                 </li>
               ))}
+
+              <li className="border-t border-cream-200/8">
+                <NavLink
+                  to={isStaff ? '/admin' : '/login'}
+                  onClick={() => setOpen(false)}
+                  className="block py-4 text-lg text-cream-200 transition-colors hover:text-cream-50"
+                >
+                  {isStaff ? 'Console' : 'Sign in'}
+                </NavLink>
+              </li>
             </ul>
 
             <Link

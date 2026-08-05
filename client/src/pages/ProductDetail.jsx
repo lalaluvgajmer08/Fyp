@@ -15,6 +15,7 @@ import { formatNPR, formatLongDate } from '../utils/formatters';
 
 /** One line of the price breakdown. */
 function PriceRow({ label, value, hint, emphasis }) {
+  
   return (
     <div className="flex items-baseline justify-between gap-4 py-3">
       <div>

@@ -1,5 +1,7 @@
 import Container from '../components/common/Container';
 import Eyebrow from '../components/common/Eyebrow';
+import { Card, CardBody } from '../components/common/Card';
+import Button from '../components/common/Button';
 import { SHOP } from '../config/site';
 
 export default function VisitUs() {
@@ -11,33 +13,94 @@ export default function VisitUs() {
   ];
 
   return (
-    <Container className="py-32">
-      <div className="max-w-2xl">
-        <Eyebrow className="mb-5">Visit us</Eyebrow>
-        <h1 className="font-display text-[2.75rem] font-light leading-tight text-cream-50 sm:text-[3.5rem]">
-          The showroom
-        </h1>
-        <p className="mt-6 text-lg leading-relaxed text-muted-400">
-          Valuations, exchanges and custom commissions are handled in person at the counter.
-        </p>
-      </div>
+    <div className="bg-forest-900 py-32">
+      <Container>
+        <div className="grid gap-16 lg:grid-cols-2">
+          {/* Left — intro */}
+          <div>
+            <Eyebrow className="mb-5">Visit us</Eyebrow>
+            <h1 className="font-display text-[2.75rem] font-light leading-tight text-cream-50 sm:text-[3.5rem]">
+              The showroom
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-muted-400">
+              Every piece in the catalogue is kept in the shop. Walk in to see the full range,
+              compare designs, and get a quote at today's rate. Sizing and engraving are done
+              on-site.
+            </p>
 
-      <dl className="mt-16 grid max-w-3xl gap-px border border-cream-200/12 bg-cream-200/12 sm:grid-cols-2">
-        {details.map((item) => (
-          <div key={item.label} className="bg-forest-850 p-7">
-            <dt className="eyebrow text-muted-400">{item.label}</dt>
-            <dd className="mt-2.5 text-cream-50">
-              {item.href ? (
-                <a href={item.href} className="transition-colors hover:text-gold-400">
-                  {item.value}
-                </a>
-              ) : (
-                item.value
+            <div className="mt-10 space-y-4">
+              {details.map((item) =>
+                item.href ? (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="block border-b border-cream-200/10 pb-3 transition-colors hover:border-gold-400/40"
+                  >
+                    <p className="eyebrow text-muted-400">{item.label}</p>
+                    <p className="mt-1 text-lg text-cream-50 transition-colors group-hover:text-gold-300">
+                      {item.value}
+                    </p>
+                  </a>
+                ) : (
+                  <div
+                    key={item.label}
+                    className="border-b border-cream-200/10 pb-3"
+                  >
+                    <p className="eyebrow text-muted-400">{item.label}</p>
+                    <p className="mt-1 text-lg text-cream-50">{item.value}</p>
+                  </div>
+                )
               )}
-            </dd>
+            </div>
+
+            <div className="mt-10 flex gap-3">
+              <Button to="/collection" variant="primary" size="lg">
+                Browse the collection
+              </Button>
+              <Button to="/rates" variant="outline" size="lg">
+                Today's rates
+              </Button>
+            </div>
           </div>
-        ))}
-      </dl>
-    </Container>
+
+          {/* Right — map placeholder and directions */}
+          <div className="space-y-6">
+            <Card>
+              <div className="aspect-video w-full bg-forest-850/60 p-8">
+                <div className="flex size-full items-center justify-center border border-dashed border-cream-200/20">
+                  <p className="text-center text-sm text-muted-400">
+                    Map embed placeholder
+                    <br />
+                    <span className="mt-2 block text-xs">
+                      Google Maps iframe would go here
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <Card>
+              <CardBody>
+                <h2 className="font-display text-xl text-cream-50">Directions</h2>
+                <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted-400">
+                  <p>
+                    <strong className="text-cream-200">From Damak bus park:</strong> Head east
+                    on the main road for 600m. The shop is on the left, two doors past the BNPL
+                    ATM.
+                  </p>
+                  <p>
+                    <strong className="text-cream-200">Parking:</strong> Street parking is
+                    available directly outside. The municipal lot is 100m north.
+                  </p>
+                  <p className="pt-2 text-xs text-muted-400/80">
+                    GPS: 26.6656° N, 87.6897° E
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        </div>
+      </Container>
+    </div>
   );
 }
