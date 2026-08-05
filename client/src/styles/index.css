@@ -1,0 +1,88 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------
+   Design tokens — Tailwind v4 reads @theme and generates utilities
+   (bg-forest-900, text-gold-400, font-display, …)
+   --------------------------------------------------------------- */
+@theme {
+  /* Forest greens — the brand surface */
+  --color-forest-950: #060f0a;
+  --color-forest-900: #0a1710;
+  --color-forest-850: #0c1c13;
+  --color-forest-800: #102417;
+  --color-forest-700: #17301f;
+  --color-forest-600: #1f3d28;
+
+  /* Gold — accent, CTA and display highlight */
+  --color-gold-500: #d9a94a;
+  --color-gold-400: #e3ba62;
+  --color-gold-300: #edcd85;
+  --color-gold-200: #f2dda8;
+
+  /* Neutral text on dark surfaces */
+  --color-cream-50: #f7f5ef;
+  --color-cream-200: #ded9cc;
+  --color-muted-400: #9fae9f;
+
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+  --font-devanagari: 'Noto Sans Devanagari', 'Jost', sans-serif;
+
+  --tracking-brand: 0.18em;
+}
+
+/* ---------------------------------------------------------------
+   Base
+   --------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-forest-900);
+    color: var(--color-cream-50);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Devanagari needs extra leading so matras above/below don't clip */
+  :lang(ne) {
+    font-family: var(--font-devanagari);
+    line-height: 1.75;
+  }
+
+  /* Visible focus ring for keyboard users on a dark background */
+  :focus-visible {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 3px;
+  }
+
+  /* Tabular figures keep rate/price columns aligned */
+  .numeric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+
+@layer utilities {
+  .eyebrow {
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-brand);
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
