@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import Container from '../common/Container';
 import { NAV_LINKS, SHOP } from '../../config/site';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-cream-200/10 bg-forest-950">
       <Container className="py-16">
@@ -10,13 +13,14 @@ export default function Footer() {
           <div className="space-y-4">
             <p className="font-display text-2xl text-gold-400">{SHOP.name}</p>
             <p className="max-w-xs text-sm leading-relaxed text-muted-400">
-              Hand-finished gold, diamond and platinum pieces, priced transparently against the
-              day&apos;s metal rates.
+              {t(
+                "Hand-finished gold, diamond and platinum pieces, priced transparently against the day's metal rates."
+              )}
             </p>
           </div>
 
-          <nav aria-label="Footer">
-            <h2 className="eyebrow mb-4 text-cream-200">Explore</h2>
+          <nav aria-label={t('Footer')}>
+            <h2 className="eyebrow mb-4 text-cream-200">{t('Explore')}</h2>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((link) => (
                 <li key={link.to}>
@@ -24,7 +28,7 @@ export default function Footer() {
                     to={link.to}
                     className="text-sm text-muted-400 transition-colors hover:text-gold-400"
                   >
-                    {link.label}
+                    {t(link.label)}
                   </Link>
                 </li>
               ))}
@@ -32,9 +36,9 @@ export default function Footer() {
           </nav>
 
           <div>
-            <h2 className="eyebrow mb-4 text-cream-200">Visit</h2>
+            <h2 className="eyebrow mb-4 text-cream-200">{t('Visit')}</h2>
             <address className="space-y-2.5 text-sm not-italic text-muted-400">
-              <p>{SHOP.address}</p>
+              <p>{t(SHOP.address)}</p>
               <p>
                 <a href={`tel:${SHOP.phone.replace(/\s/g, '')}`} className="hover:text-gold-400">
                   {SHOP.phone}
@@ -45,14 +49,19 @@ export default function Footer() {
                   {SHOP.email}
                 </a>
               </p>
-              <p>{SHOP.hours}</p>
+              <p>{t(SHOP.hours)}</p>
             </address>
           </div>
         </div>
 
         <div className="mt-12 border-t border-cream-200/10 pt-6 text-xs text-muted-400">
+          {/* Interpolated, not concatenated — Nepali puts the year and name in a
+              different order than English does. */}
           <p>
-            © {new Date().getFullYear()} {SHOP.name}. All rights reserved.
+            {t('© {year} {name}. All rights reserved.', {
+              year: new Date().getFullYear(),
+              name: SHOP.name,
+            })}
           </p>
         </div>
       </Container>

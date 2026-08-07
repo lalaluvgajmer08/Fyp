@@ -3,7 +3,8 @@ import SectionHeading from '../common/SectionHeading';
 import RateCard from './RateCard';
 import Button from '../common/Button';
 import useTodayRates from '../../hooks/useTodayRates';
-import { formatLongDate } from '../../utils/formatters';
+import useFormat from '../../hooks/useFormat';
+import { useLanguage } from '../../context/LanguageContext';
 
 function RateCardSkeleton() {
   return (
@@ -23,17 +24,19 @@ function RateCardSkeleton() {
  */
 export default function RateBoard({ showHistoryLink = true }) {
   const { rates, isLive, loading, updatedAt } = useTodayRates();
+  const { t } = useLanguage();
+  const { formatLongDate } = useFormat();
 
   return (
     <section aria-labelledby="rates-heading" className="bg-forest-850 py-20 lg:py-24">
       <Container>
         <SectionHeading
           id="rates-heading"
-          eyebrow="Today's metal rates"
-          title="Live valuation board"
+          eyebrow={t("Today's metal rates")}
+          title={t('Live valuation board')}
           aside={
             <span className="text-gold-300/80">
-              Updated {formatLongDate(updatedAt ?? new Date())}
+              {t('Updated {date}', { date: formatLongDate(updatedAt ?? new Date()) })}
             </span>
           }
         />
@@ -47,21 +50,18 @@ export default function RateBoard({ showHistoryLink = true }) {
         <div className="mt-10 flex flex-col gap-5 border-t border-cream-200/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-2xl text-sm leading-relaxed text-muted-400">
             {isLive ? (
-              <>
-                Rates follow the daily FENEGOSIDA publication and are applied to every quotation and
-                invoice.
-              </>
+              t('Rates follow the daily FENEGOSIDA publication and are applied to every quotation and invoice.')
             ) : (
               <>
-                <span className="text-gold-300">Indicative figures.</span> The live rate service is
-                not connected yet — these values are for layout preview only.
+                <span className="text-gold-300">{t('Indicative figures.')}</span>{' '}
+                {t('The live rate service is not connected yet — these values are for layout preview only.')}
               </>
             )}
           </p>
 
           {showHistoryLink && (
             <Button to="/rates" variant="outline" size="md" className="shrink-0">
-              View rate history
+              {t('View rate history')}
             </Button>
           )}
         </div>

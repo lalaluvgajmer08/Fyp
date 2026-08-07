@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { MenuIcon } from '../common/icons';
 import Button from '../common/Button';
+import LanguageToggle from '../common/LanguageToggle';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Topbar({ title, onOpenNav }) {
   const { user, logout } = useAuth();
   const toast = useToast();
+  const { t } = useLanguage();
   const [busy, setBusy] = useState(false);
 
   const handleLogout = async () => {
     setBusy(true);
     await logout();
-    toast.success('Signed out');
+    toast.success(t('Signed out'));
     setBusy(false);
   };
 
@@ -22,7 +25,7 @@ export default function Topbar({ title, onOpenNav }) {
         <button
           type="button"
           onClick={onOpenNav}
-          aria-label="Open navigation"
+          aria-label={t('Open navigation')}
           className="p-2 text-cream-50 hover:text-gold-400 lg:hidden"
         >
           <MenuIcon />
@@ -32,9 +35,11 @@ export default function Topbar({ title, onOpenNav }) {
       </div>
 
       <div className="flex items-center gap-4">
+        <LanguageToggle className="hidden sm:inline-flex" />
+
         <div className="hidden text-right sm:block">
           <p className="text-sm text-cream-50">{user?.name}</p>
-          <p className="text-xs capitalize text-muted-400">{user?.role}</p>
+          <p className="text-xs capitalize text-muted-400">{t(user?.role ?? '')}</p>
         </div>
 
         <div
@@ -45,7 +50,7 @@ export default function Topbar({ title, onOpenNav }) {
         </div>
 
         <Button variant="ghost" size="sm" onClick={handleLogout} disabled={busy}>
-          {busy ? 'Signing out…' : 'Sign out'}
+          {busy ? t('Signing out…') : t('Sign out')}
         </Button>
       </div>
     </header>

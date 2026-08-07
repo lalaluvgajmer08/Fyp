@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Container from '../common/Container';
+import LanguageToggle from '../common/LanguageToggle';
 import { BagIcon, MenuIcon, CloseIcon } from '../common/icons';
 import { NAV_LINKS, SHOP } from '../../config/site';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { cn } from '../../utils/cn';
 
 export default function Navbar({ cartCount = 0 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const isStaff = user?.role === 'admin' || user?.role === 'staff';
 
@@ -70,7 +73,7 @@ export default function Navbar({ cartCount = 0 }) {
               {NAV_LINKS.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to} className={linkClass}>
-                    {link.label}
+                    {t(link.label)}
                   </NavLink>
                 </li>
               ))}
@@ -85,16 +88,18 @@ export default function Navbar({ cartCount = 0 }) {
                 to="/admin"
                 className="hidden text-[0.9375rem] text-cream-200 transition-colors hover:text-gold-400 sm:inline"
               >
-                Console
+                {t('Console')}
               </Link>
             ) : (
               <Link
                 to="/login"
                 className="hidden text-[0.9375rem] text-cream-200 transition-colors hover:text-gold-400 sm:inline"
               >
-                Sign in
+                {t('Sign in')}
               </Link>
             )}
+
+            <LanguageToggle className="hidden sm:inline-flex" />
 
             {/* Cart */}
             <Link
@@ -102,7 +107,7 @@ export default function Navbar({ cartCount = 0 }) {
               className="hidden items-center gap-2.5 px-5 py-2.5 text-[0.9375rem] text-cream-50 ring-1 ring-inset ring-cream-200/30 transition-colors hover:text-gold-400 hover:ring-gold-400/60 sm:inline-flex"
             >
               <BagIcon />
-              <span>Cart</span>
+              <span>{t('Cart')}</span>
               {cartCount > 0 && (
                 <span className="numeric ml-0.5 rounded-full bg-gold-500 px-1.5 text-xs font-medium text-forest-950">
                   {cartCount}
@@ -116,7 +121,7 @@ export default function Navbar({ cartCount = 0 }) {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-label={open ? t('Close menu') : t('Open menu')}
               className="p-2 text-cream-50 transition-colors hover:text-gold-400 lg:hidden"
             >
               {open ? <CloseIcon /> : <MenuIcon />}
@@ -146,7 +151,7 @@ export default function Navbar({ cartCount = 0 }) {
                       )
                     }
                   >
-                    {link.label}
+                    {t(link.label)}
                   </NavLink>
                 </li>
               ))}
@@ -157,19 +162,23 @@ export default function Navbar({ cartCount = 0 }) {
                   onClick={() => setOpen(false)}
                   className="block py-4 text-lg text-cream-200 transition-colors hover:text-cream-50"
                 >
-                  {isStaff ? 'Console' : 'Sign in'}
+                  {isStaff ? t('Console') : t('Sign in')}
                 </NavLink>
               </li>
             </ul>
 
-            <Link
-              to="/cart"
-              onClick={() => setOpen(false)}
-              className="mt-6 inline-flex items-center gap-2.5 px-5 py-3 text-cream-50 ring-1 ring-inset ring-cream-200/30 sm:hidden"
-            >
-              <BagIcon />
-              Cart {cartCount > 0 && `(${cartCount})`}
-            </Link>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <LanguageToggle className="sm:hidden" />
+
+              <Link
+                to="/cart"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-2.5 px-5 py-3 text-cream-50 ring-1 ring-inset ring-cream-200/30 sm:hidden"
+              >
+                <BagIcon />
+                {t('Cart')} {cartCount > 0 && `(${cartCount})`}
+              </Link>
+            </div>
           </nav>
         </Container>
       </div>

@@ -5,8 +5,10 @@ import Button from '../components/common/Button';
 import { Card, CardBody, CardHeader } from '../components/common/Card';
 import { Input, Select } from '../components/common/Input';
 import useTodayRates from '../hooks/useTodayRates';
+import useFormat from '../hooks/useFormat';
+import { useLanguage } from '../context/LanguageContext';
 import { puritiesForMetal, PRODUCT_METALS } from '../config/productOptions';
-import { formatNPR, formatLongDate, TOLA_IN_GRAMS } from '../utils/formatters';
+import { TOLA_IN_GRAMS } from '../utils/formatters';
 import { SHOP } from '../config/site';
 
 /**
@@ -46,6 +48,8 @@ const STEPS = [
 
 export default function Exchange() {
   const { rates, isLive, updatedAt } = useTodayRates();
+  const { t, tOptions } = useLanguage();
+  const { formatNPR, formatLongDate } = useFormat();
 
   const [metal, setMetal] = useState('gold');
   const [purity, setPurity] = useState('HALLMARK_GOLD');
@@ -77,14 +81,14 @@ export default function Exchange() {
     <div className="bg-forest-900 py-32">
       <Container>
         <div className="max-w-2xl">
-          <Eyebrow className="mb-5">Old gold exchange</Eyebrow>
+          <Eyebrow className="mb-5">{t('Old gold exchange')}</Eyebrow>
           <h1 className="font-display text-[2.75rem] font-light leading-tight text-cream-50 sm:text-[3.5rem]">
-            Bring in your older jewellery
+            {t('Bring in your older jewellery')}
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-muted-400">
-            Older pieces can be exchanged against anything in the collection. Purity is tested at
-            the counter, the metal is weighed, and the value is applied to your new piece at the
-            day&rsquo;s rate.
+            {t(
+              "Older pieces can be exchanged against anything in the collection. Purity is tested at the counter, the metal is weighed, and the value is applied to your new piece at the day's rate."
+            )}
           </p>
         </div>
 
@@ -92,22 +96,27 @@ export default function Exchange() {
           {/* Estimator */}
           <Card>
             <CardHeader
-              title="Estimate your exchange"
-              subtitle="An indication only — the counter quote is set after testing"
+              title={t('Estimate your exchange')}
+              subtitle={t('An indication only — the counter quote is set after testing')}
             />
             <CardBody className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
-                <Select label="Metal" value={metal} onChange={handleMetal} options={PRODUCT_METALS} />
                 <Select
-                  label="Purity"
+                  label={t('Metal')}
+                  value={metal}
+                  onChange={handleMetal}
+                  options={tOptions(PRODUCT_METALS)}
+                />
+                <Select
+                  label={t('Purity')}
                   value={purity}
                   onChange={(e) => setPurity(e.target.value)}
-                  options={puritiesForMetal(metal)}
+                  options={tOptions(puritiesForMetal(metal))}
                 />
               </div>
 
               <Input
-                label="Weight (g)"
+                label={t('Weight (g)')}
                 type="number"
                 step="0.01"
                 min="0"
@@ -115,30 +124,25 @@ export default function Exchange() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="12.50"
-                hint="Metal weight only. Stones and enamel are deducted at the counter."
+                hint={t('Metal weight only. Stones and enamel are deducted at the counter.')}
               />
 
               <div className="border border-gold-400/25 bg-gold-500/[0.06] p-6">
                 {!rate ? (
                   <p className="text-sm leading-relaxed text-muted-400">
-                    No rate has been published for this purity yet, so an estimate cannot be shown.
-                    Call the shop on{' '}
-                    <a
-                      href={`tel:${SHOP.phone.replace(/\s/g, '')}`}
-                      className="text-gold-300 transition-colors hover:text-gold-200"
-                    >
-                      {SHOP.phone}
-                    </a>{' '}
-                    for a current quotation.
+                    {t('No rate has been published for this purity yet, so an estimate cannot be shown. Call the shop on {phone} for a current quotation.', {
+                      phone: SHOP.phone,
+                    })}
                   </p>
                 ) : !hasWeight ? (
                   <p className="text-sm leading-relaxed text-muted-400">
-                    Enter the weight to see what the piece is worth against today&rsquo;s{' '}
-                    {formatNPR(rate.ratePerTola)} per tola rate.
+                    {t("Enter the weight to see what the piece is worth against today's {rate} per tola rate.", {
+                      rate: formatNPR(rate.ratePerTola),
+                    })}
                   </p>
                 ) : (
                   <>
-                    <p className="eyebrow text-gold-400/90">Indicative exchange value</p>
+                    <p className="eyebrow text-gold-400/90">{t('Indicative exchange value')}</p>
                     <p className="numeric mt-2 font-display text-[2.5rem] leading-none text-cream-50">
                       {formatNPR(payable)}
                     </p>
@@ -146,26 +150,31 @@ export default function Exchange() {
                     <dl className="mt-5 space-y-2 border-t border-gold-400/20 pt-4 text-sm">
                       <div className="flex justify-between gap-4">
                         <dt className="text-muted-400">
-                          Metal value · {grams}g at {formatNPR(ratePerGram)}/g
+                          {t('Metal value · {weight}g at {rate}/g', {
+                            weight: grams,
+                            rate: formatNPR(ratePerGram),
+                          })}
                         </dt>
                         <dd className="numeric text-cream-200">{formatNPR(metalValue)}</dd>
                       </div>
                       <div className="flex justify-between gap-4">
                         <dt className="text-muted-400">
-                          Refining deduction · {Math.round(REFINING_DEDUCTION * 100)}%
+                          {t('Refining deduction · {percent}%', {
+                            percent: Math.round(REFINING_DEDUCTION * 100),
+                          })}
                         </dt>
                         <dd className="numeric text-cream-200">&minus;{formatNPR(deduction)}</dd>
                       </div>
                       <div className="flex justify-between gap-4">
-                        <dt className="text-muted-400">Making charge recovered</dt>
-                        <dd className="numeric text-muted-400">None</dd>
+                        <dt className="text-muted-400">{t('Making charge recovered')}</dt>
+                        <dd className="numeric text-muted-400">{t('None')}</dd>
                       </div>
                     </dl>
 
                     <p className="mt-4 border-t border-gold-400/20 pt-4 text-xs leading-relaxed text-muted-400/90">
-                      A buy-back pays for metal only. The making charge on the original purchase
-                      covered the labour of shaping the piece, and melting it down returns it to
-                      raw metal — so that labour cannot be paid back a second time.
+                      {t(
+                        'A buy-back pays for metal only. The making charge on the original purchase covered the labour of shaping the piece, and melting it down returns it to raw metal — so that labour cannot be paid back a second time.'
+                      )}
                     </p>
                   </>
                 )}
@@ -173,17 +182,17 @@ export default function Exchange() {
 
               <p className="text-xs leading-relaxed text-muted-400/80">
                 {isLive && updatedAt
-                  ? `Based on the rate published ${formatLongDate(updatedAt)}. `
-                  : ''}
-                The metal rate moves daily and the deduction depends on the condition of the piece,
-                so the final figure is confirmed at the counter.
+                  ? t('Based on the rate published {date}. The metal rate moves daily and the deduction depends on the condition of the piece, so the final figure is confirmed at the counter.', {
+                      date: formatLongDate(updatedAt),
+                    })
+                  : t('The metal rate moves daily and the deduction depends on the condition of the piece, so the final figure is confirmed at the counter.')}
               </p>
             </CardBody>
           </Card>
 
           {/* How it works */}
           <div>
-            <h2 className="font-display text-2xl font-light text-cream-50">How it works</h2>
+            <h2 className="font-display text-2xl font-light text-cream-50">{t('How it works')}</h2>
 
             <ol className="mt-8 space-y-8">
               {STEPS.map((step, i) => (
@@ -195,8 +204,8 @@ export default function Exchange() {
                     {i + 1}
                   </span>
                   <div>
-                    <h3 className="text-cream-50">{step.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted-400">{step.body}</p>
+                    <h3 className="text-cream-50">{t(step.title)}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-400">{t(step.body)}</p>
                   </div>
                 </li>
               ))}
@@ -204,16 +213,18 @@ export default function Exchange() {
 
             <div className="mt-10 border-t border-cream-200/10 pt-8">
               <p className="text-sm leading-relaxed text-muted-400">
-                Exchanges are handled in person at the showroom, {SHOP.address}. Open{' '}
-                {SHOP.hours}.
+                {t('Exchanges are handled in person at the showroom, {address}. Open {hours}.', {
+                  address: t(SHOP.address),
+                  hours: t(SHOP.hours),
+                })}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button to="/visit" variant="primary" size="lg">
-                  Plan your visit
+                  {t('Plan your visit')}
                 </Button>
                 <Button to="/collection" variant="outline" size="lg">
-                  Browse the collection
+                  {t('Browse the collection')}
                 </Button>
               </div>
             </div>
